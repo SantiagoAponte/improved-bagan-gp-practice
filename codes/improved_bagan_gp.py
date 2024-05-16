@@ -553,7 +553,7 @@ plt.legend()
 plt.show()
 
 # save gif
-import imageio
+"""import imageio
 ims = []
 for i in range(LEARNING_STEPS):
     fname = 'generated_plot_%d.png' % i
@@ -563,4 +563,4 @@ for i in range(LEARNING_STEPS):
         im = imageio.imread(dir + fname, 'png')
         ims.append(im)
 print('saving as gif...')
-imageio.mimsave(dir + 'training_demo.gif', ims, fps=3)
+imageio.mimsave(dir + 'training_demo.gif', ims, fps=3)"""
