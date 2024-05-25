@@ -206,13 +206,16 @@ em = embedding_labeled_latent()
 ae = autoencoder_trainer(en, de, em)
 
 ae.fit([x_train, y_train], x_train,
-       epochs=5000,
+       epochs=6000,
        batch_size=128,
        shuffle=True,
        validation_data=([x_test, y_test], x_test))
 
 # save encoder model
-en.save('encoder_tennis.h5')
+en.save('encoder_tennis4.h5')
+de.save('decoder_tennis4.h5')
+em.save('embedding_tennis4.h5')
+ae.save('ae_tennis4.h5')
 
 # Show results of reconstructed images
 decoded_imgs = ae.predict([x_test, y_test])
@@ -522,19 +525,19 @@ def plt_img(generator, epoch):
                 plt.gray()
             ax.get_xaxis().set_visible(False)
             ax.get_yaxis().set_visible(False)
-    plt.savefig('bagan_gp_results/generated_plot_%d.png' % epoch)
+    plt.savefig('bagan_gp_results5/generated_plot_%d.png' % epoch)
     plt.show()
     return
 
 # make directory to store results
-os.system('mkdir -p bagan_gp_results')
+os.system('mkdir -p bagan_gp_results5')
 
 # Record the loss
 d_loss_history = []
 g_loss_history = []
 
 ############################# Start training #############################
-LEARNING_STEPS = 3
+LEARNING_STEPS = 7
 for learning_step in range(LEARNING_STEPS):
     print('LEARNING STEP # ', learning_step + 1, '-' * 50)
     bagan_gp.fit(x_train, y_train, batch_size=128, epochs=1000)
@@ -543,7 +546,7 @@ for learning_step in range(LEARNING_STEPS):
     if (learning_step+1)%1 == 0:
         plt_img(bagan_gp.generator, learning_step)
     if (learning_step+1)%1 == 0:
-      bagan_gp.generator.save('bagan_gp_tennis_epoch'+str(learning_step)+'.h')
+      bagan_gp.generator.save('bagan_gp_tennis_epoch5'+str(learning_step)+'.h5')
 
 ############################# Display performance #############################
 # plot loss of G and D
@@ -557,7 +560,7 @@ plt.show()
 ims = []
 for i in range(LEARNING_STEPS):
     fname = 'generated_plot_%d.png' % i
-    dir = 'bagan_gp_results/'
+    dir = 'bagan_gp_results5/'
     if fname in os.listdir(dir):
         print('loading png...', i)
         im = imageio.imread(dir + fname, 'png')
