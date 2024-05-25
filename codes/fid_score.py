@@ -10,6 +10,7 @@ from tensorflow.keras.applications.inception_v3 import InceptionV3
 from tensorflow.keras.applications.inception_v3 import preprocess_input
 from tensorflow.keras.models import load_model
 from skimage.transform import resize
+from sklearn.model_selection import train_test_split
 
 # %% --------------------------------------- Define FID ----------------------------------------------------------------
 # Reference: https://machinelearningmastery.com/how-to-implement-the-frechet-inception-distance-fid-from-scratch/
@@ -49,16 +50,33 @@ def scale_images(images, new_shape):
 
 
 # load generator
-gen_path = 'bagan_gp_cells_v3_2_epoch100.h5'
+gen_path = 'bagan_gp_tennis5_epoch6.h5'
 generator = load_model(gen_path)
 
-# load real images from validation set
-real_imgs = np.load('x_val.npy')
-real_label = np.load('y_val.npy')
+# Carga tu dataset
+train_data = np.load('dataset.npz')
+images = train_data['x']
+labels = train_data['y']
+
+# División del dataset en entrenamiento y validación (test)
+x_train, x_val, y_train, y_val = train_test_split(images, labels, test_size=0.3, shuffle=True, random_state=38)
+
+# Asigna real_imgs y real_label a las imágenes y etiquetas de validación
+real_imgs = x_val
+real_label = y_val
+
+# Calcula el número de imágenes disponibles por clase en el conjunto de validación
+class_counts = {c: np.sum(real_label == c) for c in np.unique(real_label)}
+
+# Puedes seleccionar el sample_size basado en el mínimo número de imágenes disponibles por clase
+sample_size = min(class_counts.values())
+
+print(f"Sample size set to {sample_size} based on available images per class")
+
 
 # calculate FID for each class
 n_classes = len(np.unique(real_label))
-sample_size = 1000
+#sample_size = 1000
 for c in range(n_classes):
     ########### get generated samples by class ###########
     label = np.ones(sample_size) * c
